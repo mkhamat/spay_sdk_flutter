@@ -27,8 +27,17 @@ dependencies:
   flutter:
     sdk: flutter
   sber_pay_android:
-    path: ../sber_pay_android
+    git:
+      url: https://github.com/mkhamat/spay_sdk_flutter.git
+      ref: feat/v2.0.0
+      path: sber_pay_android
   sber_pay_ios:
-    path: ../sber_pay_ios
+      git:
+        url: https://github.com/mkhamat/spay_sdk_flutter.git
+        ref: feat/v2.0.0
+        path: sber_pay_ios
   sber_pay_platform_interface:
-    path: ../sber_pay_platform_interface
+      git:
+        url: https://github.com/mkhamat/spay_sdk_flutter.git
+        ref: feat/v2.0.0
+        path: sber_pay_platform_interface
