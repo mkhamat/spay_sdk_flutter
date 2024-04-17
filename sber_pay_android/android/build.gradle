@@ -42,13 +42,13 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 24
     }
 
     dependencies {
         testImplementation 'org.jetbrains.kotlin:kotlin-test'
         testImplementation 'org.mockito:mockito-core:5.1.1'
-        implementation( 'ru.spaymentsplus.libraries:spaysdk:2.0.3' ) { transitive = true }
+        implementation( 'ru.spaymentsplus.libraries:spaysdk:2.2.0' ) { transitive = true }
     }
 
     testOptions {
