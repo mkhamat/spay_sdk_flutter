@@ -15,6 +15,11 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import spay.sdk.SPaySdkApp
 import spay.sdk.api.PaymentResult
 import spay.sdk.api.SPayStage
+import spay.sdk.api.SPaySdkInitConfig
+import spay.sdk.api.SPayHelperConfig
+import spay.sdk.api.InitializationResult
+
+
 
 /**
  * Плагин для оплаты с использованием SberPay. Для работы нужен установленный Сбербанк (либо Сбол).
@@ -45,8 +50,22 @@ class SberPayPlugin : FlutterPlugin, ActivityAware, SberPayApi {
         val enableBnpl = config.enableBnpl ?: false
 
         try {
+            val sPaySdkInitConfig = SPaySdkInitConfig(
+                    application = activity.application,
+                    enableBnpl = true,
+                    stage = sPayStage,
+                    helperConfig = SPayHelperConfig(
+                            isHelperEnabled = true,
+                            mutableListOf()
+                    ),
+                    resultViewNeeded = true,
+                    enableLogging = true
+            ) { initializationResult: InitializationResult ->
+
+            }
+
             // TODO(RonFall): Нужно получать нормальный API для ожидания инициализации, в текущей версии SDK такого нет
-            sberPayInstance.initialize(application = activity.application, stage = sPayStage, enableBnpl = enableBnpl)
+            sberPayInstance.initialize(sPaySdkInitConfig)
             return true
         } catch (e: Exception) {
             throw FlutterError("-", e.localizedMessage, e.message)
@@ -77,7 +96,7 @@ class SberPayPlugin : FlutterPlugin, ActivityAware, SberPayApi {
             // Пока поддержка только русского языка
             val language = "RU"
 
-            sberPayInstance.payWithBankInvoiceId(activity, config.apiKey, config.merchantLogin, config.bankInvoiceId, config.bankInvoiceId, appPackage, language) { response ->
+            sberPayInstance.payWithBankInvoiceId(activity, config.apiKey, config.merchantLogin, config.bankInvoiceId, config.orderNumber, appPackage, language) { response: PaymentResult ->
                 if (!hasEventSent) {
                     when (response) {
                         // Оплата не завершена
