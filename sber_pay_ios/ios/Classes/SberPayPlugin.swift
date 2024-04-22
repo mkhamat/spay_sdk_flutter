@@ -48,7 +48,19 @@ public class SberPayPlugin: NSObject, FlutterPlugin, SberPayApi{
             sPayStage = .prod
         }
         
-        SPay.setup(bnplPlan: enableBnpl, environment: sPayStage)
+        SPay.setup(bnplPlan: true, // Необходимо ли отображение системы оплаты частями.
+                   helpers: true, // Необходимо ли отображение подсказок для пользователя, которые помогут оплатить заказ при недостатке средств или при остутствии карты.
+                   needLogs: true, // Необходимо ли писать лог SDK в консоль (работает только в режиме песочницы).
+                   helperConfig: SBHelperConfig(sbp: true, creditCard: true, debitCard: true), // Более тонкая настройка отображения helpers для пользователя.
+                   environment: sPayStage) { error in
+            if let error {
+                //  Произошла ошибка на этапе инициализации SDK.
+                print(error.description)
+            } else {
+                // SDK инициализировалось без ошибок.
+            }
+        }
+
         
         return true
     }
