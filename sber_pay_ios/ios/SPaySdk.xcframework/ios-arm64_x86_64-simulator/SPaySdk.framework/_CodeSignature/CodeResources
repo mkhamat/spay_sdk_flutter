@@ -6,11 +6,11 @@
 	<dict>
 		<key>Alert.strings</key>
 		<data>
-		DXXt9LXGl4Uz6hTKxpxXhRSc25I=
+		mUodVBpo+8nyF8pQyJXWe2E0Y+Y=
 		</data>
 		<key>Assets.car</key>
 		<data>
-		TNKnZz2FtRKquz+yVyyAuZ4uJ6U=
+		QBmymaOpnynCd417FR2LrJ+teqQ=
 		</data>
 		<key>Background.json</key>
 		<data>
@@ -20,17 +20,21 @@
 		<data>
 		XyVTFawERZGcDxoQv7IF8HOWne4=
 		</data>
+		<key>Bonuses.strings</key>
+		<data>
+		zUBkyvwCZAPUz0qIuxeWU49DN5M=
+		</data>
 		<key>Cards.strings</key>
 		<data>
 		Jrzx0WT4u7toJp7+dvshOGW8A28=
 		</data>
 		<key>Common.strings</key>
 		<data>
-		NJf4dG41QUFwWh9DEzdO7SzcdM8=
+		lFNxKh54OgKN9PsyVyb8DogI3ak=
 		</data>
 		<key>DarkSplash.json</key>
 		<data>
-		BKPInE9DFXqc/w8fnd8wSnt/Hq8=
+		E5mwAaZnMEtCYkobCctq7SlZdkU=
 		</data>
 		<key>Error.json</key>
 		<data>
@@ -38,7 +42,7 @@
 		</data>
 		<key>Error.strings</key>
 		<data>
-		eoAO+9Qm+OLbgCWfURLuEDSMGVY=
+		lYJJfl1VOCiF90HgiEDiXA3zdwo=
 		</data>
 		<key>Fake.strings</key>
 		<data>
@@ -46,7 +50,7 @@
 		</data>
 		<key>Headers/SPaySdk-Swift.h</key>
 		<data>
-		6I44zmxPGZsh+RhAlgV6rlUQCuA=
+		jTz0SY0qRBNIk5HUMzhx4BXueZ8=
 		</data>
 		<key>Headers/SPaySdk.h</key>
 		<data>
@@ -58,19 +62,23 @@
 		</data>
 		<key>Hints.strings</key>
 		<data>
-		Qjh6uNtdPfcHRUQNH1M+bq1UI34=
+		eAip44u7jXYTVojcBTOQJwj4IN0=
 		</data>
 		<key>Info.plist</key>
 		<data>
-		RM8n1CKL3lZSIbweuDt6jZ3DulQ=
+		NHxmD/MsysS5vE1s7BhfGevYxsI=
 		</data>
 		<key>LightSplash.json</key>
 		<data>
-		dkCcZ4DilaPoqzYbSmwDELZWdU0=
+		GNoFESmBuiKnx5pmUI5W0cumIy0=
 		</data>
 		<key>Loading.strings</key>
 		<data>
-		d3hwj94qVtYJ1Ad+IyUkri9T2ps=
+		luMOuwhiGsoTo/H/scU8YlQZJZw=
+		</data>
+		<key>LogoClear.json</key>
+		<data>
+		sb1PCm9jtxDD0jXOmAeGsZW4pXQ=
 		</data>
 		<key>Logout.strings</key>
 		<data>
@@ -78,43 +86,43 @@
 		</data>
 		<key>Modules/SPaySdk.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
 		<data>
-		1NjVoYvrez8CbqP9Iyks4vceRHM=
+		EddwHklDJfNTkoyf3p/wXpg1N+I=
 		</data>
 		<key>Modules/SPaySdk.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
-		PUSzjY4CrUWMoT2jJ8N/10mgAiI=
+		b+ACpc3doWTT9QdPrAbY8GBxCZ0=
 		</data>
 		<key>Modules/SPaySdk.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
 		<data>
-		lK/bfMCcxdWCUrNSI9e1lCHOnXs=
+		RcLfDC0CdV3M0wbs5DOVZG6/zyY=
 		</data>
 		<key>Modules/SPaySdk.swiftmodule/arm64-apple-ios-simulator.swiftinterface</key>
 		<data>
-		PUSzjY4CrUWMoT2jJ8N/10mgAiI=
+		b+ACpc3doWTT9QdPrAbY8GBxCZ0=
 		</data>
 		<key>Modules/SPaySdk.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		pMaWzQNkyFd6NLCegZDUjVVYwHk=
+		OnTO0TeDehhVmcoOUiGFQcAyJoo=
 		</data>
 		<key>Modules/SPaySdk.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<data>
-		1NjVoYvrez8CbqP9Iyks4vceRHM=
+		EddwHklDJfNTkoyf3p/wXpg1N+I=
 		</data>
 		<key>Modules/SPaySdk.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
-		Exn1Z0UHQqOjeurQ7sZN9/Yxd6w=
+		mxCwqtpAyoznGvS9p4iZskv+Pm0=
 		</data>
 		<key>Modules/SPaySdk.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<data>
-		LzB8JXxdwf6pWZfcXGSz3GgORn4=
+		Bsq3mMd3cmm27t2BZnY19VZHRCk=
 		</data>
 		<key>Modules/SPaySdk.swiftmodule/x86_64-apple-ios-simulator.swiftinterface</key>
 		<data>
-		Exn1Z0UHQqOjeurQ7sZN9/Yxd6w=
+		mxCwqtpAyoznGvS9p4iZskv+Pm0=
 		</data>
 		<key>Modules/SPaySdk.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		r7OQQ/l9dLCsYrCwnJo2itNFqeM=
+		vxy1do541rOSTuMdkt6Kxk4fCv8=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -130,7 +138,11 @@
 		</data>
 		<key>Payment.strings</key>
 		<data>
-		4S0+2E6a8xJ9OOmnTDnkNVOAWwE=
+		K74omPL3KvxCdrgjss4+BpKmirU=
+		</data>
+		<key>PrivacyInfo.xcprivacy</key>
+		<data>
+		RtwCbckFmUGTejQYHmeyuAIE4yM=
 		</data>
 		<key>SB Sans Display Semibold.ttf</key>
 		<data>
@@ -173,6 +185,15 @@
 			<key>optional</key>
 			<true/>
 		</dict>
+		<key>ru.lproj/PhoneNumber.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			RvDo/oZQz7Z/L3BwCJtXfa5Psb0=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
 	</dict>
 	<key>files2</key>
 	<dict>
@@ -180,14 +201,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			07OMjW88A3RwkQS2Ged5D9Y1DcgG8oo3EjguY0OvCzA=
+			oKnBY5wy8IDIYjmsLhxGBdoiZvA6GY9EDo2EzlVcIs0=
 			</data>
 		</dict>
 		<key>Assets.car</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			ZATTzds6hbNbB9ZfO9UA0BmGc0/v5SlF6Kp28DmIJZ4=
+			5oV2GYL9QVWYR/HgQkc+W65tX+jjX3bUBL2fWxpMfMs=
 			</data>
 		</dict>
 		<key>Background.json</key>
@@ -204,6 +225,13 @@
 			tFf+ew8ItX/ezgmXupyv/vgwcY2HG1bpbMBmllwUzw8=
 			</data>
 		</dict>
+		<key>Bonuses.strings</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			MO4hqX3PS6MJfvVhHgxEdtZIbKI/aUi/PH1bkbbSDe8=
+			</data>
+		</dict>
 		<key>Cards.strings</key>
 		<dict>
 			<key>hash2</key>
@@ -215,14 +243,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			te+y/xqpXb4VaMh6E0Ct1UvHX8J+AiPbWf5x7H13zzY=
+			Tv8PACXmnx898d+X4YOqC/uQA0RZLkbccen6GuCYu+c=
 			</data>
 		</dict>
 		<key>DarkSplash.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			sRxvzyaBh0PUjAttKu+TttIM9QB5Hk9YQf+XLUANwa4=
+			X2iJiRvUHFsWFyirB7LE0FRarwWuKEkKqCGqTblrPWs=
 			</data>
 		</dict>
 		<key>Error.json</key>
@@ -236,7 +264,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			oyOcnRieqMIQpfeU5GeD1OkJ0gjORVYbkzpDSqoC/lU=
+			z5wDHoyjTgbwPsCi1RFpjtBiIHE+RwWi8gUazxUW74k=
 			</data>
 		</dict>
 		<key>Fake.strings</key>
@@ -250,7 +278,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			DUOpqg6WlfZHwHDgzFdccnJize3tVUYxYsGk2T5Ii80=
+			6OSLTuwUbM/j7iRYUszYLC/ghj46CH93892dDHWUk5M=
 			</data>
 		</dict>
 		<key>Headers/SPaySdk.h</key>
@@ -271,21 +299,28 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			zwipdVLtyWoCuMuhf19WoNT3ajYA5H6WxIsg34GPMi8=
+			duludqYhzBbVzTXW16XLNSymYi3nrcjIe5fgfIqgB1Y=
 			</data>
 		</dict>
 		<key>LightSplash.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			oVKf6DytOHfGLy6pi3E/vmyHMLGx+++QeBydLIlEzZA=
+			2Sve8FTd2hwF0sSXjMf5lm2Lq8D3LyYw8Yc2m5kT7og=
 			</data>
 		</dict>
 		<key>Loading.strings</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			JXfhO4rz4f49t4uVc+2fwvosoJwfnIas0/hBQUkvHbg=
+			RapMpc/LM2o31s49C4PfudnjguDikgSKzy8qFGkP3qM=
+			</data>
+		</dict>
+		<key>LogoClear.json</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			JjqPrxWDEmoYpPw+Uo5bTQdN8oOyOKmnscssk1s8vTY=
 			</data>
 		</dict>
 		<key>Logout.strings</key>
@@ -299,70 +334,70 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			Vr67GWLBbE0lT8jJaWkV4sXgj5FeSHE9+IzR9aiFXIY=
+			k5IAO4vHDOI3BAJr85/+SrvWNRKUgOEdYNk1k/Tx1rY=
 			</data>
 		</dict>
 		<key>Modules/SPaySdk.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			J3KkKekAlIiXOR+CyEvdBYsGGhAW54JooQwJybZY8+k=
+			iRWKLvNSAIdBF/9tZPqd8j0RUfJT8riQ6X2wprh9yB4=
 			</data>
 		</dict>
 		<key>Modules/SPaySdk.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			n9OvWcouDwZdf1zEETYIVVvdtUDa4tocyaJLVs1jxmM=
+			uww/XSicbKk8D1725jNUtXiptgxs5KUwT+lXqrMCm9w=
 			</data>
 		</dict>
 		<key>Modules/SPaySdk.swiftmodule/arm64-apple-ios-simulator.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			J3KkKekAlIiXOR+CyEvdBYsGGhAW54JooQwJybZY8+k=
+			iRWKLvNSAIdBF/9tZPqd8j0RUfJT8riQ6X2wprh9yB4=
 			</data>
 		</dict>
 		<key>Modules/SPaySdk.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			HIa5ibFqIZWDqlVS0RDjPzeVca+ABQohVItVV51zoQ8=
+			t+MvAvznneJMKbpXbPg+rtWkUze2ToT5bTua41O9n7I=
 			</data>
 		</dict>
 		<key>Modules/SPaySdk.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			Vr67GWLBbE0lT8jJaWkV4sXgj5FeSHE9+IzR9aiFXIY=
+			k5IAO4vHDOI3BAJr85/+SrvWNRKUgOEdYNk1k/Tx1rY=
 			</data>
 		</dict>
 		<key>Modules/SPaySdk.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			U1900lnDlRzKe0qvVK/5BpwccI7af/i8oEWvui+EwpE=
+			iDwwsqRdYnv41TYqfwhh7Nu1L7rM44N0Ojzr7FLDqyk=
 			</data>
 		</dict>
 		<key>Modules/SPaySdk.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			BrEBZ7QkpDYaoTFQej3ugZGEUTSCSsRYsllk/iPKzHw=
+			NZH4m3ITqIY/cUwtzvWpCgG3YnxQLItfTpStkgURyfU=
 			</data>
 		</dict>
 		<key>Modules/SPaySdk.swiftmodule/x86_64-apple-ios-simulator.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			U1900lnDlRzKe0qvVK/5BpwccI7af/i8oEWvui+EwpE=
+			iDwwsqRdYnv41TYqfwhh7Nu1L7rM44N0Ojzr7FLDqyk=
 			</data>
 		</dict>
 		<key>Modules/SPaySdk.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			F8zbEt1hitztad2Iw6rhSdBJt5QW55xA0atvQuXb3IM=
+			Xnu3aaAh8zGwsRf6CHHt0xzGMgXsyfg31JSVxUh1Aiw=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
@@ -390,7 +425,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			lfOXX/SXRZbT61U6lo+DTsFXgc+kKXkRZdPgGsOiwCY=
+			442vj4mEH2fIMY9XyxcCnw8oFWDRFTxuMZojTemduDo=
+			</data>
+		</dict>
+		<key>PrivacyInfo.xcprivacy</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			HFtRHwgFRo7ORotcRxieAQpaDzVQc3OV9+6r0YY10cA=
 			</data>
 		</dict>
 		<key>SB Sans Display Semibold.ttf</key>
@@ -454,6 +496,15 @@
 			<key>hash2</key>
 			<data>
 			QrdGN3g52Kg1lcP/WdJFwKcyJy+DwmasNPMmqj641Dc=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
+		<key>ru.lproj/PhoneNumber.strings</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			cRlDZafG/D/ZFOZyWATRkeD39p4Z9kOkBx6ZT53wlkE=
 			</data>
 			<key>optional</key>
 			<true/>
