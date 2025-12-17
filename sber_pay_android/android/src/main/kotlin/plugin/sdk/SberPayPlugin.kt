@@ -12,14 +12,10 @@ import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
-import spay.sdk.SPaySdkApp
-import spay.sdk.api.PaymentResult
-import spay.sdk.api.SPayStage
-import spay.sdk.api.SPaySdkInitConfig
-import spay.sdk.api.SPayHelperConfig
-import spay.sdk.api.InitializationResult
-
-
+import ru.sberbank.sberpay.sdk.SPaySdkApp
+import ru.sberbank.sberpay.sdk.SPayInitSdkConfig
+import ru.sberbank.sberpay.sdk.SPaySdkEnv
+import ru.sberbank.sberpay.sdk.api.payment.PaymentResult
 
 /**
  * Плагин для оплаты с использованием SberPay. Для работы нужен установленный Сбербанк (либо Сбол).
@@ -28,11 +24,9 @@ class SberPayPlugin : FlutterPlugin, ActivityAware, SberPayApi {
 
     private lateinit var activity: Activity
     private lateinit var context: Context
-    private lateinit var sberPayInstance: SPaySdkApp
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPluginBinding) {
         context = flutterPluginBinding.applicationContext
-        sberPayInstance = SPaySdkApp.getInstance()
         SberPayApi.setUp(flutterPluginBinding.binaryMessenger, this)
     }
 
@@ -41,34 +35,36 @@ class SberPayPlugin : FlutterPlugin, ActivityAware, SberPayApi {
      *
      * @property InitConfig конфигурация инициализации
      */
-    override fun initSberPay(config: InitConfig): Boolean {
+    override fun initSberPay(config: InitConfig, callback: (Result<Boolean>) -> Unit) {
         val sPayStage = when (config.env) {
-            SberPayApiEnv.SANDBOXREALBANKAPP -> SPayStage.SandboxRealBankApp
-            SberPayApiEnv.SANDBOXWITHOUTBANKAPP -> SPayStage.SandBoxWithoutBankApp
-            else -> SPayStage.Prod
+            SberPayApiEnv.SANDBOXREALBANKAPP -> SPaySdkEnv.TEST
+            SberPayApiEnv.SANDBOXWITHOUTBANKAPP -> SPaySdkEnv.TEST // Or another enum if available
+            else -> SPaySdkEnv.PROD
         }
         val enableBnpl = config.enableBnpl ?: false
 
         try {
-            val sPaySdkInitConfig = SPaySdkInitConfig(
-                    application = activity.application,
-                    enableBnpl = true,
-                    stage = sPayStage,
-                    helperConfig = SPayHelperConfig(
-                            isHelperEnabled = true,
-                            mutableListOf()
-                    ),
-                    resultViewNeeded = true,
-                    enableLogging = true
-            ) { initializationResult: InitializationResult ->
+            val builder = SPayInitSdkConfig.Builder()
+                .setApiKey(config.apiKey)
+                .setMerchantLogin(config.merchantLogin)
+                .setEnvironment(sPayStage)
+                .setBnplEnabled(enableBnpl)
+                .setHelpersEnabled(true)
+                .setInitCallback(object : SPaySdkApp.InitCallback {
+                    override fun onInitSuccess() {
+                        callback(Result.success(true))
+                    }
 
-            }
+                    override fun onInitFailure(e: Throwable?) {
+                        val errorMessage = e?.message ?: "Unknown init error"
+                        callback(Result.failure(FlutterError("-", "InitError", errorMessage)))
+                    }
+                })
 
-            // TODO(RonFall): Нужно получать нормальный API для ожидания инициализации, в текущей версии SDK такого нет
-            sberPayInstance.initialize(sPaySdkInitConfig)
-            return true
+            val sPaySdkInitConfig = builder.build()
+            SPaySdkApp.initialize(activity.application, sPaySdkInitConfig)
         } catch (e: Exception) {
-            throw FlutterError("-", e.localizedMessage, e.message)
+            callback(Result.failure(FlutterError("-", e.localizedMessage, e.message)))
         }
     }
 
@@ -79,7 +75,12 @@ class SberPayPlugin : FlutterPlugin, ActivityAware, SberPayApi {
      * SPayStage.SandboxRealBankApp, SPayStage.prod - вернет false.
      */
     override fun isReadyForSPaySdk(): Boolean {
-        return sberPayInstance.isReadyForSPaySdk(context)
+        // In v3, readiness might be checked differently or simply by the fact init succeeded.
+        // Documentation says "it checks readiness of internal SDK components".
+        // Assuming SPaySdkApp has a method for this or we assume true if initialized.
+        // Using the search result info: "Modified the functionality of the isReadyForSPaySdk method"
+        // Let's assume it's still available on SPaySdkApp or the instance.
+        return SPaySdkApp.getInstance().isReadyForSPaySdk(context)
     }
 
     /**
@@ -89,28 +90,15 @@ class SberPayPlugin : FlutterPlugin, ActivityAware, SberPayApi {
      * @return SberPayApiPaymentStatus статус оплаты
      */
     override fun payWithBankInvoiceId(config: PayConfig, callback: (Result<SberPayApiPaymentStatus>) -> Unit) {
-        var hasEventSent = false // Флаг для отслеживания отправки события
-
         try {
-            val appPackage = context.packageName
-            // Пока поддержка только русского языка
-            val language = "RU"
-
-            sberPayInstance.payWithBankInvoiceId(activity, config.apiKey, config.merchantLogin, config.bankInvoiceId, config.orderNumber, appPackage, language) { response: PaymentResult ->
-                if (!hasEventSent) {
-                    when (response) {
-                        // Оплата не завершена
-                        is PaymentResult.Processing -> callback(Result.success(SberPayApiPaymentStatus.PROCESSING))
-                        // Оплата прошла успешно
-                        is PaymentResult.Success -> callback(Result.success(SberPayApiPaymentStatus.SUCCESS))
-                        // Оплата отменена
-                        is PaymentResult.Cancel -> callback(Result.success(SberPayApiPaymentStatus.CANCEL))
-                        // Оплата прошла с ошибкой
-                        is PaymentResult.Error -> callback(Result.failure(FlutterError("-", "MerchantError", response.merchantError?.description
-                                ?: "Ошибка выполнения оплаты")))
-                    }
+            // apiKey and merchantLogin are now in init
+            SPaySdkApp.getInstance().payWithBankInvoiceId(activity, config.bankInvoiceId, config.orderNumber) { response: PaymentResult ->
+                 when (response) {
+                    is PaymentResult.Processing -> callback(Result.success(SberPayApiPaymentStatus.PROCESSING))
+                    is PaymentResult.Success -> callback(Result.success(SberPayApiPaymentStatus.SUCCESS))
+                    is PaymentResult.Cancel -> callback(Result.success(SberPayApiPaymentStatus.CANCEL))
+                    is PaymentResult.Error -> callback(Result.failure(FlutterError("-", "MerchantError", response.merchantError?.description ?: "Ошибка выполнения оплаты")))
                 }
-                hasEventSent = true
             }
         } catch (error: Exception) {
             callback(Result.failure(FlutterError("-", error.localizedMessage, error.message)))

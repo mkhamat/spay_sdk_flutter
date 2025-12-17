@@ -23,6 +23,8 @@ class SberPayIOS extends SberPayPlatform {
     };
     final result = await _api.initSberPay(
       InitConfig(
+        apiKey: config.apiKey,
+        merchantLogin: config.merchantLogin,
         env: envConfig,
         enableBnpl: config.enableBnpl,
       ),
@@ -41,8 +43,8 @@ class SberPayIOS extends SberPayPlatform {
   ) async {
     final result = await _api.payWithBankInvoiceId(
       PayConfig(
-        apiKey: config.apiKey,
-        merchantLogin: config.merchantLogin,
+        apiKey: config.apiKey ?? '',
+        merchantLogin: config.merchantLogin ?? '',
         bankInvoiceId: config.bankInvoiceId,
         redirectUri: config.redirectUri,
         orderNumber: config.orderNumber,

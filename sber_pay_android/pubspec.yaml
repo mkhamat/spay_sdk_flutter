@@ -1,11 +1,11 @@
 name: sber_pay_android
 description: Android implementation of the sber_pay plugin
-version: 1.2.0
+version: 3.0.0
 publish_to: none
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
-  flutter: ^3.10.0
+  sdk: ">=3.4.0 <4.0.0"
+  flutter: ">=3.22.0"
 
 flutter:
   plugin:
@@ -20,10 +20,7 @@ dependencies:
   flutter:
     sdk: flutter
   sber_pay_platform_interface:
-      git:
-        url: https://github.com/mkhamat/spay_sdk_flutter.git
-        ref: feat/v2.2.0
-        path: sber_pay_platform_interface
-
+    path: ../sber_pay_platform_interface
 dev_dependencies:
-  pigeon: ^16.0.0
+  pigeon: ^26.0.0
+  flutter_lints: ^6.0.0

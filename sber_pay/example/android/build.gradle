@@ -1,12 +1,12 @@
 buildscript {
-    ext.kotlin_version = '1.7.10'
+    ext.kotlin_version = '1.9.22'
     repositories {
         google()
         mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.2'
+        classpath 'com.android.tools.build:gradle:8.3.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -19,21 +19,23 @@ allprojects {
 }
 
 def sberpayProperties = new File('sberpay.properties')
-def properties = new Properties()
-properties.load(sberpayProperties.newDataInputStream())
+if (sberpayProperties.exists()) {
+    def properties = new Properties()
+    properties.load(sberpayProperties.newDataInputStream())
 
-def link = properties.getProperty('sPayUrl')
-def login = properties.getProperty('sPayUsername')
-def pass = properties.getProperty('sPayPassword')
+    def link = properties.getProperty('sPayUrl')
+    def login = properties.getProperty('sPayUsername')
+    def pass = properties.getProperty('sPayPassword')
 
-allprojects {
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri(link)
-            credentials {
-                username = login
-                password = pass
+    allprojects {
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = uri(link)
+                credentials {
+                    username = login
+                    password = pass
+                }
             }
         }
     }

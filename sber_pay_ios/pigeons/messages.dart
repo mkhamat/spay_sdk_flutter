@@ -44,9 +44,17 @@ enum SberPayApiPaymentStatus {
 /// Конфигурация инициализации
 class InitConfig {
   const InitConfig({
+    required this.apiKey,
+    required this.merchantLogin,
     required this.env,
     required this.enableBnpl,
   });
+
+  /// Ключ, выдаваемый по договору, либо создаваемый в личном кабинете
+  final String apiKey;
+
+  /// Логин, выдаваемый по договору, либо создаваемый в личном кабинете
+  final String merchantLogin;
 
   /// Среда запуска
   final SberPayApiEnv env;
@@ -83,6 +91,7 @@ class PayConfig {
 
 @HostApi()
 abstract class SberPayApi {
+  @async
   bool initSberPay(InitConfig config);
 
   bool isReadyForSPaySdk();

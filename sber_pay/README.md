@@ -8,6 +8,21 @@
 случае чего, можно посмотреть как все реализовано в `example`. Тестирование на Android проводится на реальном
 устройстве.
 
+### Инициализация
+
+Инициализация SDK теперь является асинхронной операцией и ее необходимо дождаться (await). Искусственные задержки (delay) больше не требуются.
+
+```dart
+await SberPayPlugin.initSberPay(
+  apiKey: apiKey,
+  merchantLogin: merchantLogin,
+  env: env,
+);
+
+// Теперь можно проверять готовность к оплате
+final isReady = await SberPayPlugin.isReadyForSPaySdk();
+```
+
 ### Android
 
 Для получения SberPay SDK на стороне Android необходимо создать в папке `android` вашего приложения файл

@@ -27,9 +27,6 @@ abstract class SberPayPlatform extends PlatformInterface {
   /// Инициализация SberPay SDK.
   ///
   /// Необходимо выполнить для начала работы с библиотекой.
-  /// На платформе Android этот метод является асинхронным, однако у
-  /// него нет API (коллбека) для выполнения кода после завершения
-  /// инициализации.
   ///
   /// Принимает конфигурацию инициализации [SberPayInitConfig].
   Future<bool> initSberPay(SberPayInitConfig config) {
@@ -40,9 +37,6 @@ abstract class SberPayPlatform extends PlatformInterface {
   ///
   /// Зависит от переданного аргумента *env* при инициализации через метод
   /// [initSberPay] (см. комментарий к методу).
-  ///
-  /// Запрос может выполняться долго, поэтому здесь стоит искусственная
-  /// задержка, чтобы дождаться инициализации SDK.
   ///
   /// Если у пользователя нет установленного сбера в режимах
   /// [SberPayEnv.sandboxRealBankApp], [SberPayEnv.prod] - вернет false.

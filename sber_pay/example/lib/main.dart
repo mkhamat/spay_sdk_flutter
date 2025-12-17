@@ -31,8 +31,8 @@ class _SberPayExampleAppState extends State<SberPayExampleApp> {
   @override
   void initState() {
     super.initState();
-    _invoiceIdController = TextEditingController();
-    _orderNumberController = TextEditingController();
+    _invoiceIdController = TextEditingController()..text = '';
+    _orderNumberController = TextEditingController()..text = '';
     _paymentStatus = '';
     _selectedInitType = SberPayEnv.sandboxWithoutBankApp;
     _isPluginLoading = false;
@@ -45,15 +45,13 @@ class _SberPayExampleAppState extends State<SberPayExampleApp> {
   Future<void> _readyForPay() async {
     setState(() => _isPluginLoading = true);
     _isPluginInitialized = await SberPayPlugin.initSberPay(
+      apiKey: _apiKey,
+      merchantLogin: _merchantLogin,
       env: _selectedInitType,
     );
     if (mounted) setState(() {});
 
     _isAppReadyForPay = await SberPayPlugin.isReadyForSPaySdk();
-    if (!_isAppReadyForPay) {
-      await Future.delayed(Duration(seconds: 2));
-      _isAppReadyForPay = await SberPayPlugin.isReadyForSPaySdk();
-    }
     if (mounted) setState(() => _isPluginLoading = false);
   }
 
@@ -225,7 +223,17 @@ class _SberPayExampleAppState extends State<SberPayExampleApp> {
                             )
                           : SberPayButton(
                               onPressed: () async {
+                                print(
+                                    '--- SberPayButton onPressed started ---');
+                                print('Environment: $_selectedInitType');
+                                print(
+                                    'Config: apiKey=$_apiKey, merchantLogin=$_merchantLogin');
+                                print(
+                                    'Inputs: bankInvoiceId=${_invoiceIdController.text}, orderNumber=${_orderNumberController.text}');
+
                                 if (_apiKey.isEmpty || _merchantLogin.isEmpty) {
+                                  print(
+                                      'Error: API Key or Merchant Login is empty');
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       content: Text(
@@ -240,6 +248,7 @@ class _SberPayExampleAppState extends State<SberPayExampleApp> {
                                     _orderNumberController.text
                                         .trim()
                                         .isEmpty) {
+                                  print('Error: Input fields are empty');
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       content: Text(
@@ -250,14 +259,22 @@ class _SberPayExampleAppState extends State<SberPayExampleApp> {
                                   );
                                 } else {
                                   try {
+                                    print('Attempting to pay with:');
+                                    print(
+                                        '  bankInvoiceId: ${_invoiceIdController.text}');
+                                    print('  redirectUri: $_redirectUri');
+                                    print(
+                                        '  orderNumber: ${_orderNumberController.text}');
+
                                     final result = await SberPayPlugin
                                         .payWithBankInvoiceId(
-                                      apiKey: _apiKey,
-                                      merchantLogin: _merchantLogin,
                                       bankInvoiceId: _invoiceIdController.text,
                                       redirectUri: _redirectUri,
                                       orderNumber: _orderNumberController.text,
                                     );
+
+                                    print('Payment result: $result');
+
                                     switch (result) {
                                       case SberPayPaymentStatus.success:
                                         _color = Colors.green;
@@ -281,12 +298,18 @@ class _SberPayExampleAppState extends State<SberPayExampleApp> {
                                     }
                                     setState(() {});
                                   } on PlatformException catch (e) {
+                                    print('PlatformException caught:');
+                                    print('  code: ${e.code}');
+                                    print('  message: ${e.message}');
+                                    print('  details: ${e.details}');
                                     setState(
                                       () {
                                         _color = Colors.red;
                                         _paymentStatus = e.details ?? '';
                                       },
                                     );
+                                  } catch (e) {
+                                    print('Unexpected error caught: $e');
                                   }
                                 }
                               },

@@ -23,6 +23,8 @@ class SberPayAndroid extends SberPayPlatform {
     };
     final result = await _api.initSberPay(
       InitConfig(
+        apiKey: config.apiKey,
+        merchantLogin: config.merchantLogin,
         env: envConfig,
         enableBnpl: config.enableBnpl,
       ),
@@ -41,8 +43,6 @@ class SberPayAndroid extends SberPayPlatform {
   ) async {
     final result = await _api.payWithBankInvoiceId(
       PayConfig(
-        apiKey: config.apiKey,
-        merchantLogin: config.merchantLogin,
         bankInvoiceId: config.bankInvoiceId,
         orderNumber: config.orderNumber,
       ),

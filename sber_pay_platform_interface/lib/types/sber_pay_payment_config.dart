@@ -1,18 +1,18 @@
 /// Конфигурация оплаты
 class SberPayPaymentConfig {
   const SberPayPaymentConfig({
-    required this.apiKey,
-    required this.merchantLogin,
+    this.apiKey,
+    this.merchantLogin,
     required this.bankInvoiceId,
     required this.redirectUri,
     required this.orderNumber,
   });
 
   /// Ключ, выдаваемый по договору, либо создаваемый в личном кабинете
-  final String apiKey;
+  final String? apiKey;
 
   /// Логин, выдаваемый по договору, либо создаваемый в личном кабинете
-  final String merchantLogin;
+  final String? merchantLogin;
 
   /// Уникальный идентификатор заказа, сгенерированный Банком
   final String bankInvoiceId;
