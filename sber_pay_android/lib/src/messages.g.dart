@@ -14,21 +14,20 @@ PlatformException _createConnectionError(String channelName) {
     message: 'Unable to establish connection on channel: "$channelName".',
   );
 }
-
 bool _deepEquals(Object? a, Object? b) {
   if (a is List && b is List) {
     return a.length == b.length &&
         a.indexed
-            .every(((int, dynamic) item) => _deepEquals(item.$2, b[item.$1]));
+        .every(((int, dynamic) item) => _deepEquals(item.$2, b[item.$1]));
   }
   if (a is Map && b is Map) {
-    return a.length == b.length &&
-        a.entries.every((MapEntry<Object?, Object?> entry) =>
-            (b as Map<Object?, Object?>).containsKey(entry.key) &&
-            _deepEquals(entry.value, b[entry.key]));
+    return a.length == b.length && a.entries.every((MapEntry<Object?, Object?> entry) =>
+        (b as Map<Object?, Object?>).containsKey(entry.key) &&
+        _deepEquals(entry.value, b[entry.key]));
   }
   return a == b;
 }
+
 
 /// Тип инициализации сервисов Сбербанка
 enum SberPayApiEnv {
@@ -36,12 +35,10 @@ enum SberPayApiEnv {
   ///
   /// Для авторизации пользователя происходит редирект в приложение Сбербанка.
   prod,
-
   /// Режим песочницы.
   ///
   /// Позволяет протестировать оплату как в [prod], но с тестовыми данными.
   sandboxRealBankApp,
-
   /// Режим песочницы без перехода в банк.
   ///
   /// При авторизации пользователя не осуществляется переход в приложение
@@ -53,15 +50,18 @@ enum SberPayApiEnv {
 enum SberPayApiPaymentStatus {
   /// Успешный результат
   success,
-
   /// Необходимо проверить статус оплаты
   processing,
-
   /// Пользователь отменил оплату
   cancel,
-
   /// Неизвестный тип
   unknown,
+}
+
+/// Тип оплаты (сценарий)
+enum PaymentMethod {
+  invoice,
+  autoPayment,
 }
 
 /// Конфигурация инициализации
@@ -95,8 +95,7 @@ class InitConfig {
   }
 
   Object encode() {
-    return _toList();
-  }
+    return _toList();  }
 
   static InitConfig decode(Object result) {
     result as List<Object?>;
@@ -122,45 +121,69 @@ class InitConfig {
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList());
+  int get hashCode => Object.hashAll(_toList())
+;
 }
 
 /// Конфигурация оплаты
-class PayConfig {
-  PayConfig({
+class PaymentRequest {
+  PaymentRequest({
+    this.apiKey,
+    this.merchantLogin,
     required this.bankInvoiceId,
+    required this.redirectUri,
     required this.orderNumber,
+    required this.paymentMethod,
   });
+
+  /// Ключ, выдаваемый по договору, либо создаваемый в личном кабинете
+  String? apiKey;
+
+  /// Логин, выдаваемый по договору, либо создаваемый в личном кабинете
+  String? merchantLogin;
 
   /// Уникальный идентификатор заказа, сгенерированный Банком
   String bankInvoiceId;
 
+  /// Диплинк для перехода обратно в приложение после открытия Сбербанка
+  String redirectUri;
+
   /// Номер заказа
   String orderNumber;
 
+  /// Метод оплаты
+  PaymentMethod paymentMethod;
+
   List<Object?> _toList() {
     return <Object?>[
+      apiKey,
+      merchantLogin,
       bankInvoiceId,
+      redirectUri,
       orderNumber,
+      paymentMethod,
     ];
   }
 
   Object encode() {
-    return _toList();
-  }
+    return _toList();  }
 
-  static PayConfig decode(Object result) {
+  static PaymentRequest decode(Object result) {
     result as List<Object?>;
-    return PayConfig(
-      bankInvoiceId: result[0]! as String,
-      orderNumber: result[1]! as String,
+    return PaymentRequest(
+      apiKey: result[0] as String?,
+      merchantLogin: result[1] as String?,
+      bankInvoiceId: result[2]! as String,
+      redirectUri: result[3]! as String,
+      orderNumber: result[4]! as String,
+      paymentMethod: result[5]! as PaymentMethod,
     );
   }
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
   bool operator ==(Object other) {
-    if (other is! PayConfig || other.runtimeType != runtimeType) {
+    if (other is! PaymentRequest || other.runtimeType != runtimeType) {
       return false;
     }
     if (identical(this, other)) {
@@ -171,8 +194,10 @@ class PayConfig {
 
   @override
   // ignore: avoid_equals_and_hash_code_on_mutable_classes
-  int get hashCode => Object.hashAll(_toList());
+  int get hashCode => Object.hashAll(_toList())
+;
 }
+
 
 class _PigeonCodec extends StandardMessageCodec {
   const _PigeonCodec();
@@ -181,17 +206,20 @@ class _PigeonCodec extends StandardMessageCodec {
     if (value is int) {
       buffer.putUint8(4);
       buffer.putInt64(value);
-    } else if (value is SberPayApiEnv) {
+    }    else if (value is SberPayApiEnv) {
       buffer.putUint8(129);
       writeValue(buffer, value.index);
-    } else if (value is SberPayApiPaymentStatus) {
+    }    else if (value is SberPayApiPaymentStatus) {
       buffer.putUint8(130);
       writeValue(buffer, value.index);
-    } else if (value is InitConfig) {
+    }    else if (value is PaymentMethod) {
       buffer.putUint8(131);
-      writeValue(buffer, value.encode());
-    } else if (value is PayConfig) {
+      writeValue(buffer, value.index);
+    }    else if (value is InitConfig) {
       buffer.putUint8(132);
+      writeValue(buffer, value.encode());
+    }    else if (value is PaymentRequest) {
+      buffer.putUint8(133);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -201,16 +229,19 @@ class _PigeonCodec extends StandardMessageCodec {
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 129:
+      case 129: 
         final value = readValue(buffer) as int?;
         return value == null ? null : SberPayApiEnv.values[value];
-      case 130:
+      case 130: 
         final value = readValue(buffer) as int?;
         return value == null ? null : SberPayApiPaymentStatus.values[value];
-      case 131:
+      case 131: 
+        final value = readValue(buffer) as int?;
+        return value == null ? null : PaymentMethod.values[value];
+      case 132: 
         return InitConfig.decode(readValue(buffer)!);
-      case 132:
-        return PayConfig.decode(readValue(buffer)!);
+      case 133: 
+        return PaymentRequest.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
     }
@@ -221,11 +252,9 @@ class SberPayApi {
   /// Constructor for [SberPayApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  SberPayApi(
-      {BinaryMessenger? binaryMessenger, String messageChannelSuffix = ''})
+  SberPayApi({BinaryMessenger? binaryMessenger, String messageChannelSuffix = ''})
       : pigeonVar_binaryMessenger = binaryMessenger,
-        pigeonVar_messageChannelSuffix =
-            messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
+        pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
   final BinaryMessenger? pigeonVar_binaryMessenger;
 
   static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
@@ -233,15 +262,13 @@ class SberPayApi {
   final String pigeonVar_messageChannelSuffix;
 
   Future<bool> initSberPay(InitConfig config) async {
-    final pigeonVar_channelName =
-        'dev.flutter.pigeon.sber_pay_android.SberPayApi.initSberPay$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName = 'dev.flutter.pigeon.sber_pay_android.SberPayApi.initSberPay$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final Future<Object?> pigeonVar_sendFuture =
-        pigeonVar_channel.send(<Object?>[config]);
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[config]);
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
@@ -262,8 +289,7 @@ class SberPayApi {
   }
 
   Future<bool> isReadyForSPaySdk() async {
-    final pigeonVar_channelName =
-        'dev.flutter.pigeon.sber_pay_android.SberPayApi.isReadyForSPaySdk$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName = 'dev.flutter.pigeon.sber_pay_android.SberPayApi.isReadyForSPaySdk$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -289,16 +315,14 @@ class SberPayApi {
     }
   }
 
-  Future<SberPayApiPaymentStatus> payWithBankInvoiceId(PayConfig config) async {
-    final pigeonVar_channelName =
-        'dev.flutter.pigeon.sber_pay_android.SberPayApi.payWithBankInvoiceId$pigeonVar_messageChannelSuffix';
+  Future<SberPayApiPaymentStatus> pay(PaymentRequest request) async {
+    final pigeonVar_channelName = 'dev.flutter.pigeon.sber_pay_android.SberPayApi.pay$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final Future<Object?> pigeonVar_sendFuture =
-        pigeonVar_channel.send(<Object?>[config]);
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[request]);
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);

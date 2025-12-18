@@ -88,37 +88,44 @@ public class SberPayPlugin: NSObject, FlutterPlugin, SberPayApi{
 
     /**
      Метод для оплаты.
-     - Parameter PayConfig конфигурация оплаты
+     - Parameter request конфигурация оплаты
      - Returns SberPayApiPaymentStatus статус оплаты
      */
-    func payWithBankInvoiceId(config: PayConfig, completion: @escaping (Result<SberPayApiPaymentStatus, Error>) -> Void) {
-        if config.bankInvoiceId.count != 32 {
-            completion(.failure(FlutterError(code: "-", message: "MerchantError", details: "Длина bankInvoiceId должна быть 32 символа")))
+    func pay(request: PaymentRequest, completion: @escaping (Result<SberPayApiPaymentStatus, Error>) -> Void) {
+        if request.bankInvoiceId.count != 32 {
+            completion(.failure(PigeonError(code: "-", message: "MerchantError", details: "Длина bankInvoiceId должна быть 32 символа")))
             return
         }
 
         guard let topController = getTopViewController() else {
-            completion(.failure(FlutterError(code: "PluginError", message: "SberPay: Failed to implement controller", details: nil)))
+            completion(.failure(PigeonError(code: "PluginError", message: "SberPay: Failed to implement controller", details: nil)))
             return
         }
 
-        // Use credentials from config if available (legacy support/override) or fallback to cached ones
-        let finalApiKey = config.apiKey.isEmpty == false ? config.apiKey : self.apiKey
-        let finalMerchantLogin = config.merchantLogin.isEmpty == false ? config.merchantLogin : self.merchantLogin
+        // Use credentials from request if available or fallback to cached ones
+        let finalApiKey = request.apiKey?.isEmpty == false ? request.apiKey : self.apiKey
+        let finalMerchantLogin = request.merchantLogin?.isEmpty == false ? request.merchantLogin : self.merchantLogin
 
-        let request = SBankInvoicePaymentRequest(
+        let paymentRequest = SPaymentRequest(
+            apiKey: finalApiKey,
+            bankInvoiceId: request.bankInvoiceId,
+            orderNumber: request.orderNumber,
             merchantLogin: finalMerchantLogin,
-            bankInvoiceId: config.bankInvoiceId,
-            orderNumber: config.orderNumber,
-            language: "RU",
-            redirectUri: config.redirectUri,
-            apiKey: finalApiKey)
+            redirectUri: request.redirectUri)
 
-        SPay.pay(with: topController, paymentRequest: request) { state, info, arg in
+        let method: SPayMethod
+        switch request.paymentMethod {
+        case .autoPayment:
+            method = .autoPayment
+        default:
+            method = .default
+        }
+
+        SPay.pay(view: topController, method: method, request: paymentRequest) { state, bankInvoiceId, localSessionId, info in
              print("SberPay pay callback. State: \(state)")
-             print("SberPay pay info: \(info)")
-             if let arg = arg {
-                 print("SberPay pay arg: \(arg)")
+             print("SberPay pay info: \(String(describing: info))")
+             if let localSessionId = localSessionId {
+                 print("SberPay pay localSessionId: \(localSessionId)")
              }
 
              switch state {
@@ -129,13 +136,13 @@ public class SberPayPlugin: NSObject, FlutterPlugin, SberPayApi{
              case .cancel:
                  completion(.success(SberPayApiPaymentStatus.cancel))
              case .error:
-                 let infoString = String(describing: info)
-                 let argString = arg != nil ? String(describing: arg!) : "No arg"
-                 let fullMessage = "Ошибка оплаты. Info: \(infoString). Arg: \(argString)"
-                 completion(.failure(FlutterError(code: "PAY_ERROR", message: fullMessage, details: info)))
+                 let infoString = info ?? "Unknown error"
+                 let sessionIdString = localSessionId != nil ? String(describing: localSessionId!) : "No session ID"
+                 let fullMessage = "Ошибка оплаты. Info: \(infoString). SessionId: \(sessionIdString)"
+                 completion(.failure(PigeonError(code: "PAY_ERROR", message: fullMessage, details: info)))
              @unknown default:
-                 let infoString = String(describing: info)
-                 completion(.failure(FlutterError(code: "UNKNOWN_STATE", message: "Неопределенная ошибка (State: \(state)). Info: \(infoString)", details: info)))
+                 let infoString = info ?? "Unknown error"
+                 completion(.failure(PigeonError(code: "UNKNOWN_STATE", message: "Неопределенная ошибка (State: \(state)). Info: \(infoString)", details: info)))
              }
         }
     }

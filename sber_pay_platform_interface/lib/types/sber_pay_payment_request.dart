@@ -1,11 +1,21 @@
-/// Конфигурация оплаты
-class SberPayPaymentConfig {
-  const SberPayPaymentConfig({
+/// Тип оплаты (сценарий)
+enum SberPayPaymentMethod {
+  /// Оплата по инвойсу (по умолчанию)
+  invoice,
+
+  /// Автоматическая оплата
+  autoPayment,
+}
+
+/// Конфигурация оплаты (Request)
+class SberPayPaymentRequest {
+  const SberPayPaymentRequest({
     this.apiKey,
     this.merchantLogin,
     required this.bankInvoiceId,
     required this.redirectUri,
     required this.orderNumber,
+    this.paymentMethod = SberPayPaymentMethod.invoice,
   });
 
   /// Ключ, выдаваемый по договору, либо создаваемый в личном кабинете
@@ -22,4 +32,7 @@ class SberPayPaymentConfig {
 
   /// Номер заказа
   final String orderNumber;
+
+  /// Метод оплаты (сценарий)
+  final SberPayPaymentMethod paymentMethod;
 }

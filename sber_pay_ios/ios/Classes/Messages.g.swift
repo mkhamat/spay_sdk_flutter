@@ -157,6 +157,12 @@ enum SberPayApiPaymentStatus: Int {
   case unknown = 3
 }
 
+/// Тип оплаты (сценарий)
+enum PaymentMethod: Int {
+  case invoice = 0
+  case autoPayment = 1
+}
+
 /// Конфигурация инициализации
 ///
 /// Generated class from Pigeon that represents data sent in messages.
@@ -203,33 +209,37 @@ struct InitConfig: Hashable {
 /// Конфигурация оплаты
 ///
 /// Generated class from Pigeon that represents data sent in messages.
-struct PayConfig: Hashable {
+struct PaymentRequest: Hashable {
   /// Ключ, выдаваемый по договору, либо создаваемый в личном кабинете
-  var apiKey: String
+  var apiKey: String? = nil
   /// Логин, выдаваемый по договору, либо создаваемый в личном кабинете
-  var merchantLogin: String
+  var merchantLogin: String? = nil
   /// Уникальный идентификатор заказа, сгенерированный Банком
   var bankInvoiceId: String
   /// Диплинк для перехода обратно в приложение после открытия Сбербанка
   var redirectUri: String
   /// Номер заказа
   var orderNumber: String
+  /// Метод оплаты
+  var paymentMethod: PaymentMethod
 
 
   // swift-format-ignore: AlwaysUseLowerCamelCase
-  static func fromList(_ pigeonVar_list: [Any?]) -> PayConfig? {
-    let apiKey = pigeonVar_list[0] as! String
-    let merchantLogin = pigeonVar_list[1] as! String
+  static func fromList(_ pigeonVar_list: [Any?]) -> PaymentRequest? {
+    let apiKey: String? = nilOrValue(pigeonVar_list[0])
+    let merchantLogin: String? = nilOrValue(pigeonVar_list[1])
     let bankInvoiceId = pigeonVar_list[2] as! String
     let redirectUri = pigeonVar_list[3] as! String
     let orderNumber = pigeonVar_list[4] as! String
+    let paymentMethod = pigeonVar_list[5] as! PaymentMethod
 
-    return PayConfig(
+    return PaymentRequest(
       apiKey: apiKey,
       merchantLogin: merchantLogin,
       bankInvoiceId: bankInvoiceId,
       redirectUri: redirectUri,
-      orderNumber: orderNumber
+      orderNumber: orderNumber,
+      paymentMethod: paymentMethod
     )
   }
   func toList() -> [Any?] {
@@ -239,9 +249,10 @@ struct PayConfig: Hashable {
       bankInvoiceId,
       redirectUri,
       orderNumber,
+      paymentMethod,
     ]
   }
-  static func == (lhs: PayConfig, rhs: PayConfig) -> Bool {
+  static func == (lhs: PaymentRequest, rhs: PaymentRequest) -> Bool {
     return deepEqualsMessages(lhs.toList(), rhs.toList())  }
   func hash(into hasher: inout Hasher) {
     deepHashMessages(value: toList(), hasher: &hasher)
@@ -264,9 +275,15 @@ private class MessagesPigeonCodecReader: FlutterStandardReader {
       }
       return nil
     case 131:
-      return InitConfig.fromList(self.readValue() as! [Any?])
+      let enumResultAsInt: Int? = nilOrValue(self.readValue() as! Int?)
+      if let enumResultAsInt = enumResultAsInt {
+        return PaymentMethod(rawValue: enumResultAsInt)
+      }
+      return nil
     case 132:
-      return PayConfig.fromList(self.readValue() as! [Any?])
+      return InitConfig.fromList(self.readValue() as! [Any?])
+    case 133:
+      return PaymentRequest.fromList(self.readValue() as! [Any?])
     default:
       return super.readValue(ofType: type)
     }
@@ -281,11 +298,14 @@ private class MessagesPigeonCodecWriter: FlutterStandardWriter {
     } else if let value = value as? SberPayApiPaymentStatus {
       super.writeByte(130)
       super.writeValue(value.rawValue)
-    } else if let value = value as? InitConfig {
+    } else if let value = value as? PaymentMethod {
       super.writeByte(131)
-      super.writeValue(value.toList())
-    } else if let value = value as? PayConfig {
+      super.writeValue(value.rawValue)
+    } else if let value = value as? InitConfig {
       super.writeByte(132)
+      super.writeValue(value.toList())
+    } else if let value = value as? PaymentRequest {
+      super.writeByte(133)
       super.writeValue(value.toList())
     } else {
       super.writeValue(value)
@@ -312,7 +332,7 @@ class MessagesPigeonCodec: FlutterStandardMessageCodec, @unchecked Sendable {
 protocol SberPayApi {
   func initSberPay(config: InitConfig, completion: @escaping (Result<Bool, Error>) -> Void)
   func isReadyForSPaySdk() throws -> Bool
-  func payWithBankInvoiceId(config: PayConfig, completion: @escaping (Result<SberPayApiPaymentStatus, Error>) -> Void)
+  func pay(request: PaymentRequest, completion: @escaping (Result<SberPayApiPaymentStatus, Error>) -> Void)
 }
 
 /// Generated setup class from Pigeon to handle messages through the `binaryMessenger`.
@@ -351,12 +371,12 @@ class SberPayApiSetup {
     } else {
       isReadyForSPaySdkChannel.setMessageHandler(nil)
     }
-    let payWithBankInvoiceIdChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.sber_pay_ios.SberPayApi.payWithBankInvoiceId\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    let payChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.sber_pay_ios.SberPayApi.pay\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
-      payWithBankInvoiceIdChannel.setMessageHandler { message, reply in
+      payChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
-        let configArg = args[0] as! PayConfig
-        api.payWithBankInvoiceId(config: configArg) { result in
+        let requestArg = args[0] as! PaymentRequest
+        api.pay(request: requestArg) { result in
           switch result {
           case .success(let res):
             reply(wrapResult(res))
@@ -366,7 +386,7 @@ class SberPayApiSetup {
         }
       }
     } else {
-      payWithBankInvoiceIdChannel.setMessageHandler(nil)
+      payChannel.setMessageHandler(nil)
     }
   }
 }

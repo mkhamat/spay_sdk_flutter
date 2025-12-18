@@ -38,13 +38,22 @@ class SberPayAndroid extends SberPayPlatform {
   }
 
   @override
-  Future<SberPayPaymentStatus> payWithBankInvoiceId(
-    SberPayPaymentConfig config,
+  Future<SberPayPaymentStatus> pay(
+    SberPayPaymentRequest request,
   ) async {
-    final result = await _api.payWithBankInvoiceId(
-      PayConfig(
-        bankInvoiceId: config.bankInvoiceId,
-        orderNumber: config.orderNumber,
+    final method = switch (request.paymentMethod) {
+      SberPayPaymentMethod.autoPayment => PaymentMethod.autoPayment,
+      _ => PaymentMethod.invoice
+    };
+
+    final result = await _api.pay(
+      PaymentRequest(
+        apiKey: request.apiKey,
+        merchantLogin: request.merchantLogin,
+        bankInvoiceId: request.bankInvoiceId,
+        redirectUri: request.redirectUri,
+        orderNumber: request.orderNumber,
+        paymentMethod: method,
       ),
     );
     return switch (result) {

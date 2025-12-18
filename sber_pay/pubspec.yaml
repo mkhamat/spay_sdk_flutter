@@ -1,6 +1,6 @@
 name: sber_pay
 description: Flutter плагин для нативного платежного сервиса SberPay.
-version: 3.0.0
+version: 3.1.0
 publish_to: none
 
 environment:

@@ -124,6 +124,18 @@ enum class SberPayApiPaymentStatus(val raw: Int) {
   }
 }
 
+/** Тип оплаты (сценарий) */
+enum class PaymentMethod(val raw: Int) {
+  INVOICE(0),
+  AUTO_PAYMENT(1);
+
+  companion object {
+    fun ofRaw(raw: Int): PaymentMethod? {
+      return values().firstOrNull { it.raw == raw }
+    }
+  }
+}
+
 /**
  * Конфигурация инициализации
  *
@@ -174,28 +186,44 @@ data class InitConfig (
  *
  * Generated class from Pigeon that represents data sent in messages.
  */
-data class PayConfig (
+data class PaymentRequest (
+  /** Ключ, выдаваемый по договору, либо создаваемый в личном кабинете */
+  val apiKey: String? = null,
+  /** Логин, выдаваемый по договору, либо создаваемый в личном кабинете */
+  val merchantLogin: String? = null,
   /** Уникальный идентификатор заказа, сгенерированный Банком */
   val bankInvoiceId: String,
+  /** Диплинк для перехода обратно в приложение после открытия Сбербанка */
+  val redirectUri: String,
   /** Номер заказа */
-  val orderNumber: String
+  val orderNumber: String,
+  /** Метод оплаты */
+  val paymentMethod: PaymentMethod
 )
  {
   companion object {
-    fun fromList(pigeonVar_list: List<Any?>): PayConfig {
-      val bankInvoiceId = pigeonVar_list[0] as String
-      val orderNumber = pigeonVar_list[1] as String
-      return PayConfig(bankInvoiceId, orderNumber)
+    fun fromList(pigeonVar_list: List<Any?>): PaymentRequest {
+      val apiKey = pigeonVar_list[0] as String?
+      val merchantLogin = pigeonVar_list[1] as String?
+      val bankInvoiceId = pigeonVar_list[2] as String
+      val redirectUri = pigeonVar_list[3] as String
+      val orderNumber = pigeonVar_list[4] as String
+      val paymentMethod = pigeonVar_list[5] as PaymentMethod
+      return PaymentRequest(apiKey, merchantLogin, bankInvoiceId, redirectUri, orderNumber, paymentMethod)
     }
   }
   fun toList(): List<Any?> {
     return listOf(
+      apiKey,
+      merchantLogin,
       bankInvoiceId,
+      redirectUri,
       orderNumber,
+      paymentMethod,
     )
   }
   override fun equals(other: Any?): Boolean {
-    if (other !is PayConfig) {
+    if (other !is PaymentRequest) {
       return false
     }
     if (this === other) {
@@ -219,13 +247,18 @@ private open class MessagesPigeonCodec : StandardMessageCodec() {
         }
       }
       131.toByte() -> {
-        return (readValue(buffer) as? List<Any?>)?.let {
-          InitConfig.fromList(it)
+        return (readValue(buffer) as Long?)?.let {
+          PaymentMethod.ofRaw(it.toInt())
         }
       }
       132.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          PayConfig.fromList(it)
+          InitConfig.fromList(it)
+        }
+      }
+      133.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          PaymentRequest.fromList(it)
         }
       }
       else -> super.readValueOfType(type, buffer)
@@ -241,12 +274,16 @@ private open class MessagesPigeonCodec : StandardMessageCodec() {
         stream.write(130)
         writeValue(stream, value.raw.toLong())
       }
-      is InitConfig -> {
+      is PaymentMethod -> {
         stream.write(131)
+        writeValue(stream, value.raw.toLong())
+      }
+      is InitConfig -> {
+        stream.write(132)
         writeValue(stream, value.toList())
       }
-      is PayConfig -> {
-        stream.write(132)
+      is PaymentRequest -> {
+        stream.write(133)
         writeValue(stream, value.toList())
       }
       else -> super.writeValue(stream, value)
@@ -259,7 +296,7 @@ private open class MessagesPigeonCodec : StandardMessageCodec() {
 interface SberPayApi {
   fun initSberPay(config: InitConfig, callback: (Result<Boolean>) -> Unit)
   fun isReadyForSPaySdk(): Boolean
-  fun payWithBankInvoiceId(config: PayConfig, callback: (Result<SberPayApiPaymentStatus>) -> Unit)
+  fun pay(request: PaymentRequest, callback: (Result<SberPayApiPaymentStatus>) -> Unit)
 
   companion object {
     /** The codec used by SberPayApi. */
@@ -306,12 +343,12 @@ interface SberPayApi {
         }
       }
       run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.sber_pay_android.SberPayApi.payWithBankInvoiceId$separatedMessageChannelSuffix", codec)
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.sber_pay_android.SberPayApi.pay$separatedMessageChannelSuffix", codec)
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
-            val configArg = args[0] as PayConfig
-            api.payWithBankInvoiceId(configArg) { result: Result<SberPayApiPaymentStatus> ->
+            val requestArg = args[0] as PaymentRequest
+            api.pay(requestArg) { result: Result<SberPayApiPaymentStatus> ->
               val error = result.exceptionOrNull()
               if (error != null) {
                 reply.reply(MessagesPigeonUtils.wrapError(error))

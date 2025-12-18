@@ -58,8 +58,8 @@ class SberPayPlugin {
     String? apiKey,
     String? merchantLogin,
   }) async =>
-      _platform.payWithBankInvoiceId(
-        SberPayPaymentConfig(
+      _platform.pay(
+        SberPayPaymentRequest(
           apiKey: apiKey,
           merchantLogin: merchantLogin,
           bankInvoiceId: bankInvoiceId,

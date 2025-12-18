@@ -41,6 +41,12 @@ enum SberPayApiPaymentStatus {
   unknown;
 }
 
+/// Тип оплаты (сценарий)
+enum PaymentMethod {
+  invoice,
+  autoPayment,
+}
+
 /// Конфигурация инициализации
 class InitConfig {
   const InitConfig({
@@ -64,20 +70,21 @@ class InitConfig {
 }
 
 /// Конфигурация оплаты
-class PayConfig {
-  const PayConfig({
-    required this.apiKey,
-    required this.merchantLogin,
+class PaymentRequest {
+  const PaymentRequest({
+    this.apiKey,
+    this.merchantLogin,
     required this.bankInvoiceId,
     required this.redirectUri,
     required this.orderNumber,
+    required this.paymentMethod,
   });
 
   /// Ключ, выдаваемый по договору, либо создаваемый в личном кабинете
-  final String apiKey;
+  final String? apiKey;
 
   /// Логин, выдаваемый по договору, либо создаваемый в личном кабинете
-  final String merchantLogin;
+  final String? merchantLogin;
 
   /// Уникальный идентификатор заказа, сгенерированный Банком
   final String bankInvoiceId;
@@ -87,6 +94,9 @@ class PayConfig {
 
   /// Номер заказа
   final String orderNumber;
+
+  /// Метод оплаты
+  final PaymentMethod paymentMethod;
 }
 
 @HostApi()
@@ -97,5 +107,5 @@ abstract class SberPayApi {
   bool isReadyForSPaySdk();
 
   @async
-  SberPayApiPaymentStatus payWithBankInvoiceId(PayConfig config);
+  SberPayApiPaymentStatus pay(PaymentRequest request);
 }

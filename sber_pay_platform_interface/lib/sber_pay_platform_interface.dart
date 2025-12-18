@@ -46,13 +46,13 @@ abstract class SberPayPlatform extends PlatformInterface {
 
   /// Метод оплаты через SberPay SDK.
   ///
-  /// Принимает конфигурацию оплаты [SberPayPaymentConfig].
+  /// Принимает конфигурацию оплаты [SberPayPaymentRequest].
   /// Возвращает статус оплаты [SberPayPaymentStatus]
-  Future<SberPayPaymentStatus> payWithBankInvoiceId(
-    SberPayPaymentConfig config,
+  Future<SberPayPaymentStatus> pay(
+    SberPayPaymentRequest request,
   ) {
     throw UnimplementedError(
-      'payWithBankInvoiceId() has not been implemented.',
+      'pay() has not been implemented.',
     );
   }
 }
