@@ -105,28 +105,37 @@ public class SberPayPlugin: NSObject, FlutterPlugin, SberPayApi{
         // Use credentials from request if available or fallback to cached ones
         let finalApiKey = request.apiKey?.isEmpty == false ? request.apiKey : self.apiKey
         let finalMerchantLogin = request.merchantLogin?.isEmpty == false ? request.merchantLogin : self.merchantLogin
+        
+        guard let apiKey = finalApiKey, !apiKey.isEmpty else {
+             completion(.failure(PigeonError(code: "PluginError", message: "ApiKey is missing", details: nil)))
+             return
+        }
+        
+        guard let merchantLogin = finalMerchantLogin, !merchantLogin.isEmpty else {
+             completion(.failure(PigeonError(code: "PluginError", message: "MerchantLogin is missing", details: nil)))
+             return
+        }
 
         let paymentRequest = SPaymentRequest(
-            apiKey: finalApiKey,
+            apiKey: apiKey,
             bankInvoiceId: request.bankInvoiceId,
             orderNumber: request.orderNumber,
-            merchantLogin: finalMerchantLogin,
-            redirectUri: request.redirectUri)
+            merchantLogin: merchantLogin,
+            redirectUri: request.redirectUri,
+            phoneNumber: nil)
 
         let method: SPayMethod
         switch request.paymentMethod {
         case .autoPayment:
-            method = .autoPayment
+            method = .default
         default:
             method = .default
         }
 
         SPay.pay(view: topController, method: method, request: paymentRequest) { state, bankInvoiceId, localSessionId, info in
              print("SberPay pay callback. State: \(state)")
-             print("SberPay pay info: \(String(describing: info))")
-             if let localSessionId = localSessionId {
-                 print("SberPay pay localSessionId: \(localSessionId)")
-             }
+             print("SberPay pay info: \(info)")
+             print("SberPay pay localSessionId: \(localSessionId)")
 
              switch state {
              case .success:
@@ -136,13 +145,10 @@ public class SberPayPlugin: NSObject, FlutterPlugin, SberPayApi{
              case .cancel:
                  completion(.success(SberPayApiPaymentStatus.cancel))
              case .error:
-                 let infoString = info ?? "Unknown error"
-                 let sessionIdString = localSessionId != nil ? String(describing: localSessionId!) : "No session ID"
-                 let fullMessage = "Ошибка оплаты. Info: \(infoString). SessionId: \(sessionIdString)"
+                 let fullMessage = "Ошибка оплаты. Info: \(info). SessionId: \(localSessionId)"
                  completion(.failure(PigeonError(code: "PAY_ERROR", message: fullMessage, details: info)))
              @unknown default:
-                 let infoString = info ?? "Unknown error"
-                 completion(.failure(PigeonError(code: "UNKNOWN_STATE", message: "Неопределенная ошибка (State: \(state)). Info: \(infoString)", details: info)))
+                 completion(.failure(PigeonError(code: "UNKNOWN_STATE", message: "Неопределенная ошибка (State: \(state)). Info: \(info)", details: info)))
              }
         }
     }
