@@ -27,8 +27,8 @@ import spay.sdk.api.model.SPaymentRequest
  */
 class SberPayPlugin : FlutterPlugin, ActivityAware, SberPayApi {
 
-    private lateinit var activity: Activity
-    private lateinit var context: Context
+    private var activity: Activity? = null
+    private var context: Context? = null
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPluginBinding) {
         context = flutterPluginBinding.applicationContext
@@ -41,6 +41,12 @@ class SberPayPlugin : FlutterPlugin, ActivityAware, SberPayApi {
      * @property InitConfig конфигурация инициализации
      */
     override fun initSberPay(config: InitConfig, callback: (Result<Boolean>) -> Unit) {
+        val currentActivity = activity
+        if (currentActivity == null) {
+            callback(Result.failure(FlutterError("NO_ACTIVITY", "Activity not attached", "Plugin not properly initialized")))
+            return
+        }
+
         val sPayStage = when (config.env) {
             SberPayApiEnv.SANDBOX_REAL_BANK_APP -> SPayStage.SandboxRealBankApp
             SberPayApiEnv.SANDBOX_WITHOUT_BANK_APP -> SPayStage.SandBoxWithoutBankApp // Or another enum if available
@@ -65,7 +71,7 @@ class SberPayPlugin : FlutterPlugin, ActivityAware, SberPayApi {
                 callback(Result.success(true))
             }
 
-            SPaySdkApp.getInstance().initialize(activity.application, sPaySdkInitConfig)
+            SPaySdkApp.getInstance().initialize(currentActivity.application, sPaySdkInitConfig)
         } catch (e: Exception) {
             callback(Result.failure(FlutterError("-", e.localizedMessage, e.message)))
         }
@@ -78,7 +84,13 @@ class SberPayPlugin : FlutterPlugin, ActivityAware, SberPayApi {
      * SPayStage.SandboxRealBankApp, SPayStage.prod - вернет false.
      */
     override fun isReadyForSPaySdk(callback: (Result<Boolean>) -> Unit) {
-        SPaySdkApp.getInstance().isReadyForSPaySdk(context) { result ->
+        val currentContext = context
+        if (currentContext == null) {
+            callback(Result.failure(FlutterError("NO_CONTEXT", "Context not initialized", "Plugin not properly initialized")))
+            return
+        }
+
+        SPaySdkApp.getInstance().isReadyForSPaySdk(currentContext) { result ->
             callback(Result.success(result is SdkReadyCheckResult.Ready))
         }
     }
@@ -90,11 +102,17 @@ class SberPayPlugin : FlutterPlugin, ActivityAware, SberPayApi {
      * @return SberPayApiPaymentStatus статус оплаты
      */
     override fun pay(request: PaymentRequest, callback: (Result<SberPayApiPaymentStatus>) -> Unit) {
+        val currentActivity = activity
+        if (currentActivity == null) {
+            callback(Result.failure(FlutterError("NO_ACTIVITY", "Activity not attached", "Plugin not properly initialized")))
+            return
+        }
+
         try {
             SPaySdkApp.getInstance().pay(
                 method = SPayMethod.WithBankInvoiceId,
                 request = SPaymentRequest(
-                    context = activity.application,
+                    context = currentActivity.application,
                     apiKey = request.apiKey ?: "",
                     merchantLogin = request.merchantLogin ?: "",
                     bankInvoiceId = request.bankInvoiceId,
@@ -117,6 +135,7 @@ class SberPayPlugin : FlutterPlugin, ActivityAware, SberPayApi {
 
     override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
         SberPayApi.setUp(binding.binaryMessenger, null)
+        context = null
     }
 
     override fun onAttachedToActivity(activityBinding: ActivityPluginBinding) {
@@ -127,7 +146,11 @@ class SberPayPlugin : FlutterPlugin, ActivityAware, SberPayApi {
         activity = activityBinding.activity
     }
 
-    override fun onDetachedFromActivity() {}
+    override fun onDetachedFromActivity() {
+        activity = null
+    }
 
-    override fun onDetachedFromActivityForConfigChanges() {}
+    override fun onDetachedFromActivityForConfigChanges() {
+        activity = null
+    }
 }
