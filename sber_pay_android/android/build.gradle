@@ -25,7 +25,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    namespace "spay.sdk"
+    namespace "plugin.sdk"
     compileSdk 36
 
     compileOptions {
