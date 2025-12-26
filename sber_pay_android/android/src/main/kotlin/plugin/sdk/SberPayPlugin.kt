@@ -77,12 +77,10 @@ class SberPayPlugin : FlutterPlugin, ActivityAware, SberPayApi {
      * @return Если у пользователя нет установленного сбера в режимах
      * SPayStage.SandboxRealBankApp, SPayStage.prod - вернет false.
      */
-    override fun isReadyForSPaySdk(): Boolean {
-        var isReadyForSPaySdk = false
-        SPaySdkApp.getInstance().isReadyForSPaySdk(context, {
-            isReadyForSPaySdk = it is SdkReadyCheckResult.Ready
-        })
-        return isReadyForSPaySdk;
+    override fun isReadyForSPaySdk(callback: (Result<Boolean>) -> Unit) {
+        SPaySdkApp.getInstance().isReadyForSPaySdk(context) { result ->
+            callback(Result.success(result is SdkReadyCheckResult.Ready))
+        }
     }
 
     /**

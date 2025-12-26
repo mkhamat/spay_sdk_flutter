@@ -99,7 +99,7 @@ class PaymentRequest {
   /// Метод оплаты
   final PaymentMethod paymentMethod;
 
-    /// Идентификатор приложения, которое использует данный плагин
+  /// Идентификатор приложения, которое использует данный плагин
   final String? applicationId;
 }
 
@@ -108,6 +108,7 @@ abstract class SberPayApi {
   @async
   bool initSberPay(InitConfig config);
 
+  @async
   bool isReadyForSPaySdk();
 
   @async
