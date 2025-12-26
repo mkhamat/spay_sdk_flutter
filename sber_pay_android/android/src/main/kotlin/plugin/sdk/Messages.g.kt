@@ -198,9 +198,7 @@ data class PaymentRequest (
   /** Номер заказа */
   val orderNumber: String,
   /** Метод оплаты */
-  val paymentMethod: PaymentMethod,
-  /** Идентификатор приложения, которое использует данный плагин */
-  val applicationId: String? = null
+  val paymentMethod: PaymentMethod
 )
  {
   companion object {
@@ -211,8 +209,7 @@ data class PaymentRequest (
       val redirectUri = pigeonVar_list[3] as String
       val orderNumber = pigeonVar_list[4] as String
       val paymentMethod = pigeonVar_list[5] as PaymentMethod
-      val applicationId = pigeonVar_list[6] as String?
-      return PaymentRequest(apiKey, merchantLogin, bankInvoiceId, redirectUri, orderNumber, paymentMethod, applicationId)
+      return PaymentRequest(apiKey, merchantLogin, bankInvoiceId, redirectUri, orderNumber, paymentMethod)
     }
   }
   fun toList(): List<Any?> {
@@ -223,7 +220,6 @@ data class PaymentRequest (
       redirectUri,
       orderNumber,
       paymentMethod,
-      applicationId,
     )
   }
   override fun equals(other: Any?): Boolean {

@@ -117,7 +117,7 @@ class SberPayPlugin : FlutterPlugin, ActivityAware, SberPayApi {
                     merchantLogin = request.merchantLogin ?: "",
                     bankInvoiceId = request.bankInvoiceId,
                     orderNumber = request.orderNumber,
-                    appPackage = request.applicationId ?: "",
+                    appPackage = currentActivity.packageName,
                     phoneNumber = ""
                 ) { response: PaymentResult ->
                     when (response) {

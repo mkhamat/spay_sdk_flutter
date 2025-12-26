@@ -78,7 +78,6 @@ class PaymentRequest {
     required this.redirectUri,
     required this.orderNumber,
     required this.paymentMethod,
-    required this.applicationId,
   });
 
   /// Ключ, выдаваемый по договору, либо создаваемый в личном кабинете
@@ -98,9 +97,6 @@ class PaymentRequest {
 
   /// Метод оплаты
   final PaymentMethod paymentMethod;
-
-  /// Идентификатор приложения, которое использует данный плагин
-  final String? applicationId;
 }
 
 @HostApi()

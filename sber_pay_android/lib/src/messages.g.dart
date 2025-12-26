@@ -134,7 +134,6 @@ class PaymentRequest {
     required this.redirectUri,
     required this.orderNumber,
     required this.paymentMethod,
-    this.applicationId,
   });
 
   /// Ключ, выдаваемый по договору, либо создаваемый в личном кабинете
@@ -155,9 +154,6 @@ class PaymentRequest {
   /// Метод оплаты
   PaymentMethod paymentMethod;
 
-  /// Идентификатор приложения, которое использует данный плагин
-  String? applicationId;
-
   List<Object?> _toList() {
     return <Object?>[
       apiKey,
@@ -166,7 +162,6 @@ class PaymentRequest {
       redirectUri,
       orderNumber,
       paymentMethod,
-      applicationId,
     ];
   }
 
@@ -182,7 +177,6 @@ class PaymentRequest {
       redirectUri: result[3]! as String,
       orderNumber: result[4]! as String,
       paymentMethod: result[5]! as PaymentMethod,
-      applicationId: result[6] as String?,
     );
   }
 
