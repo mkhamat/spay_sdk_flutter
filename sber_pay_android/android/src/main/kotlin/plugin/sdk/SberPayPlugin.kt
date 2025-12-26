@@ -62,6 +62,7 @@ class SberPayPlugin : FlutterPlugin, ActivityAware, SberPayApi {
                 enableOutsideTouchCancelling = true,
             ) { initializationResult ->
                 Log.i("Initialization_result_spay", "$initializationResult")
+                callback(Result.success(true))
             }
 
             SPaySdkApp.getInstance().initialize(activity.application, sPaySdkInitConfig)
