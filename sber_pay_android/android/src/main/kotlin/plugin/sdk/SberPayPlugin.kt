@@ -112,7 +112,7 @@ class SberPayPlugin : FlutterPlugin, ActivityAware, SberPayApi {
             SPaySdkApp.getInstance().pay(
                 method = SPayMethod.WithBankInvoiceId,
                 request = SPaymentRequest(
-                    context = currentActivity.application,
+                    context = currentActivity,
                     apiKey = request.apiKey ?: "",
                     merchantLogin = request.merchantLogin ?: "",
                     bankInvoiceId = request.bankInvoiceId,
